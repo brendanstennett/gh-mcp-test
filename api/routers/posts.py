@@ -1,7 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from api.models.post import Post
+from api.models.user import User
 from typing import List
 from api.boot.dependencies import PostRepositoryDep
+from api.boot.auth import current_user
 
 router = APIRouter()
 
@@ -23,7 +25,8 @@ async def find_post(
 @router.post("", response_model=Post, status_code=201, tags=["posts"])
 async def create_post(
     post: Post,
-    posts_repository: PostRepositoryDep
+    posts_repository: PostRepositoryDep,
+    user: User = Depends(current_user)
 ) -> Post:
     return await posts_repository.create_post(post)
 
@@ -31,7 +34,8 @@ async def create_post(
 async def update_post(
     post_id: int,
     post_data: dict,
-    posts_repository: PostRepositoryDep
+    posts_repository: PostRepositoryDep,
+    user: User = Depends(current_user)
 ) -> Post:
     updated_post = await posts_repository.update_post(post_id, post_data)
     if not updated_post:
@@ -41,7 +45,8 @@ async def update_post(
 @router.delete("/{post_id}", status_code=204, tags=["posts"])
 async def delete_post(
     post_id: int,
-    posts_repository: PostRepositoryDep
+    posts_repository: PostRepositoryDep,
+    user: User = Depends(current_user)
 ):
     success = await posts_repository.delete_post(post_id)
     if not success:

@@ -2,24 +2,18 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.routers import posts
+from api.routers import auth
 from api.boot.database import create_db_and_tables
 from contextlib import asynccontextmanager
-
-# Create FastAPI application instance
-app = FastAPI(
-    title="FastAPI Application",
-    description="A FastAPI application with proper structure and absolute imports",
-    version="0.1.0"
-)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    create_db_and_tables()
+    await create_db_and_tables()
     yield
     # Shutdown (if needed)
 
-# Create FastAPI application instance
+# Create FastAPI application instance with lifespan
 app = FastAPI(
     title="FastAPI Application",
     description="A FastAPI application with proper structure and absolute imports",
@@ -38,6 +32,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(posts.router, prefix="/api/v1/posts", tags=["posts"])
+app.include_router(auth.router, prefix="/auth", tags=["authentication"])
 
 # Health check endpoint
 @app.get("/")

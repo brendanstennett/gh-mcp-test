@@ -5,6 +5,7 @@ This module contains database-related commands for the FastAPI application,
 including database initialization, migration, and maintenance operations.
 """
 
+import asyncio
 import typer
 from typing_extensions import Annotated
 from api.boot.database import create_db_and_tables, engine
@@ -42,20 +43,22 @@ def init_db(
         if verbose:
             typer.echo("🔄 Initializing database...")
 
-        create_db_and_tables()
+        asyncio.run(create_db_and_tables())
 
         typer.echo("✅ Database initialized successfully!")
 
         if verbose:
-            # Show some basic database info
-            with engine.connect() as conn:
-                result = conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))
-                tables = [row[0] for row in result]
+            async def show_table_info():
+                async with engine.begin() as conn:
+                    result = await conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))
+                    tables = [row[0] for row in result.fetchall()]
 
-                if tables:
-                    typer.echo(f"📊 Created tables: {', '.join(tables)}")
-                else:
-                    typer.echo("📊 No tables found (this might be normal for an empty schema)")
+                    if tables:
+                        typer.echo(f"📊 Created tables: {', '.join(tables)}")
+                    else:
+                        typer.echo("📊 No tables found (this might be normal for an empty schema)")
+
+            asyncio.run(show_table_info())
 
     except Exception as e:
         typer.echo(f"❌ Database initialization failed: {str(e)}")
@@ -72,16 +75,16 @@ def check_db(
     shows detailed information about the database structure.
     """
 
-    try:
-        with engine.connect() as conn:
+    async def check_db_async():
+        async with engine.begin() as conn:
             # Test basic connectivity
-            conn.execute(text("SELECT 1"))
+            await conn.execute(text("SELECT 1"))
             typer.echo("✅ Database connection: OK")
 
             if verbose:
                 # Get table information
-                result = conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))
-                tables = [row[0] for row in result]
+                result = await conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))
+                tables = [row[0] for row in result.fetchall()]
 
                 if tables:
                     typer.echo(f"📊 Tables found: {len(tables)}")
@@ -92,7 +95,7 @@ def check_db(
                     typer.echo("\n📈 Row counts:")
                     for table in tables:
                         try:
-                            count_result = conn.execute(text(f"SELECT COUNT(*) FROM {table}"))
+                            count_result = await conn.execute(text(f"SELECT COUNT(*) FROM {table}"))
                             count = count_result.scalar()
                             typer.echo(f"  - {table}: {count} rows")
                         except Exception:
@@ -101,11 +104,15 @@ def check_db(
                     typer.echo("📊 No tables found")
 
                 # Database file info
-                db_info = conn.execute(text("PRAGMA database_list")).fetchall()
+                db_info_result = await conn.execute(text("PRAGMA database_list"))
+                db_info = db_info_result.fetchall()
                 for db in db_info:
                     if db[1] == 'main':  # Main database
                         typer.echo(f"🗄️  Database file: {db[2]}")
                         break
+
+    try:
+        asyncio.run(check_db_async())
 
     except Exception as e:
         typer.echo(f"❌ Database connection failed: {str(e)}")
@@ -135,7 +142,7 @@ def reset_db():
         typer.echo("🔄 Resetting database...")
 
         # Drop all tables by recreating the database
-        create_db_and_tables()
+        asyncio.run(create_db_and_tables())
 
         typer.echo("✅ Database reset completed successfully!")
         typer.echo("🔄 All tables have been recreated.")
