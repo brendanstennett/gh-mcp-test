@@ -50,7 +50,7 @@ class PostsRepository:
         post = result.scalars().first()
 
         if post:
-            self.session.delete(post)
+            await self.session.delete(post)
             await self.session.commit()
             return True
 
