@@ -27,13 +27,13 @@ from api.commands import serve, version, init_db, check_db, reset_db
 
 # Create database command group
 db_app = typer.Typer(help="Database management commands")
-db_app.command("init", help="Initialize database and create tables")(init_db)
-db_app.command("check", help="Check database connection and status")(check_db)
-db_app.command("reset", help="Reset database (WARNING: deletes all data)")(reset_db)
+_ = db_app.command("init", help="Initialize database and create tables")(init_db)
+_ = db_app.command("check", help="Check database connection and status")(check_db)
+_ = db_app.command("reset", help="Reset database (WARNING: deletes all data)")(reset_db)
 
 # Register commands
-app.command("serve")(serve)
-app.command("version")(version)
+_ = app.command("serve")(serve)
+_ = app.command("version")(version)
 app.add_typer(db_app, name="db")
 
 if __name__ == "__main__":

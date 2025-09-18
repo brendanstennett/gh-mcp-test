@@ -1,27 +1,39 @@
+# pyright: reportUnknownVariableType=false
+# pyright: reportMissingParameterType=false
+# pyright: reportUnknownParameterType=false
+# pyright: reportUnknownArgumentType=false
+# pyright: reportAny=false
+# pyright: reportUnknownMemberType=false
+
 import pytest
-from sqlmodel import Session, SQLModel, create_engine
+import pytest_asyncio
+from sqlmodel import SQLModel
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from api.services.repositories.posts_repository import PostsRepository
 from api.models.post import Post
 
 
-@pytest.fixture
-def test_session():
+@pytest_asyncio.fixture
+async def test_session():
     """Create a test database session"""
-    engine = create_engine("sqlite:///:memory:")
-    SQLModel.metadata.create_all(engine)
+    engine = create_async_engine("sqlite+aiosqlite:///:memory:")
+    async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
-    with Session(engine) as session:
+    async with engine.begin() as conn:
+        await conn.run_sync(SQLModel.metadata.create_all)
+
+    async with async_session_maker() as session:
         yield session
 
 
-@pytest.fixture
-def posts_repository(test_session: Session):
+@pytest_asyncio.fixture
+async def posts_repository(test_session):
     """Create a PostsRepository instance with test session"""
     return PostsRepository(test_session)
 
 
 @pytest.mark.asyncio
-async def test_create_and_find_post(posts_repository: PostsRepository):
+async def test_create_and_find_post(posts_repository):
     """Test creating and finding a post"""
     # Create a new post
     new_post = Post(name="Test Post")
@@ -37,14 +49,14 @@ async def test_create_and_find_post(posts_repository: PostsRepository):
 
 
 @pytest.mark.asyncio
-async def test_all_posts(posts_repository: PostsRepository):
+async def test_all_posts(posts_repository):
     """Test retrieving all posts"""
     # Create some test posts
     post1 = Post(name="First Post")
     post2 = Post(name="Second Post")
 
-    await posts_repository.create_post(post1)
-    await posts_repository.create_post(post2)
+    _ = await posts_repository.create_post(post1)
+    _ = await posts_repository.create_post(post2)
 
     # Get all posts
     all_posts = await posts_repository.all_posts()
@@ -55,7 +67,7 @@ async def test_all_posts(posts_repository: PostsRepository):
 
 
 @pytest.mark.asyncio
-async def test_update_post(posts_repository: PostsRepository):
+async def test_update_post(posts_repository):
     """Test updating a post"""
     # Create a post
     new_post = Post(name="Original Name")
@@ -66,9 +78,10 @@ async def test_update_post(posts_repository: PostsRepository):
     assert created_post.id is not None
 
     # Update the post
+    update_data = Post(name="Updated Name")
     updated_post = await posts_repository.update_post(
         created_post.id,
-        {"name": "Updated Name"}
+        update_data
     )
 
     assert updated_post is not None
@@ -77,7 +90,7 @@ async def test_update_post(posts_repository: PostsRepository):
 
 
 @pytest.mark.asyncio
-async def test_delete_post(posts_repository: PostsRepository):
+async def test_delete_post(posts_repository):
     """Test deleting a post"""
     # Create a post
     new_post = Post(name="To Delete")
@@ -97,14 +110,14 @@ async def test_delete_post(posts_repository: PostsRepository):
 
 
 @pytest.mark.asyncio
-async def test_find_nonexistent_post(posts_repository: PostsRepository):
+async def test_find_nonexistent_post(posts_repository):
     """Test finding a post that doesn't exist"""
     result = await posts_repository.find_post(999)
     assert result is None
 
 
 @pytest.mark.asyncio
-async def test_delete_nonexistent_post(posts_repository: PostsRepository):
+async def test_delete_nonexistent_post(posts_repository):
     """Test deleting a post that doesn't exist"""
     success = await posts_repository.delete_post(999)
     assert success is False

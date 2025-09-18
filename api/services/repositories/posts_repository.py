@@ -36,15 +36,12 @@ class PostsRepository:
         if not existing_post:
             return None
 
-        # Update fields from the provided post data using model_copy
-        updated_data = post_data.model_dump(exclude_unset=True, exclude={'id'})
-        updated_post = existing_post.model_copy(update=updated_data)
+        update_data = post_data.model_dump(exclude_unset=True, exclude={'id'})
+        existing_post = existing_post.model_copy(update=update_data)
 
-        # Replace the existing post in the session
-        merged_post = await self.session.merge(updated_post)
         await self.session.commit()
-        await self.session.refresh(merged_post)
-        return merged_post
+        await self.session.refresh(existing_post)
+        return existing_post
 
 
     async def delete_post(self, post_id: int) -> bool:
