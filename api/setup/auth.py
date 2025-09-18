@@ -11,7 +11,7 @@ from typing import Optional
 import uuid
 
 from api.models.user import User
-from api.boot.database import get_async_session
+from api.setup.database import get_async_session
 
 # Secret key for JWT - in production, use environment variables
 SECRET = "your-secret-key-here"  # TODO: Move to environment variables

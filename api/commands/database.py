@@ -8,7 +8,7 @@ including database initialization, migration, and maintenance operations.
 import asyncio
 import typer
 from typing_extensions import Annotated
-from api.boot.database import create_db_and_tables, engine
+from api.setup.database import create_db_and_tables, engine
 from sqlmodel import text
 
 

@@ -3,9 +3,9 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi_users.db import SQLAlchemyUserDatabase
 
-from api.boot.database import get_async_session
+from api.setup.database import get_async_session
 from api.models.user import User
-from api.boot.auth import UserManager
+from api.setup.auth import UserManager
 from api.services.repositories.posts_repository import PostsRepository
 
 # Database Dependencies
@@ -32,11 +32,11 @@ PostsRepositoryDep = Annotated[PostsRepository, Depends(get_posts_repository)]
 # Authentication Dependencies
 # These import at runtime to avoid circular imports
 def _get_current_user():
-    from api.boot.auth import current_user
+    from api.setup.auth import current_user
     return current_user
 
 def _get_current_superuser():
-    from api.boot.auth import current_superuser
+    from api.setup.auth import current_superuser
     return current_superuser
 
 CurrentUserDep = Annotated[User, Depends(_get_current_user)]

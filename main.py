@@ -18,7 +18,7 @@ import uvicorn
 def run_development():
     """Run the application in development mode with hot reload."""
     uvicorn.run(
-        "api.boot.app:app",
+        "api.setup.app:app",
         host="0.0.0.0",
         port=8000,
         reload=True,
@@ -32,7 +32,7 @@ def run_development():
 def run_production():
     """Run the application in production mode."""
     uvicorn.run(
-        "api.boot.app:app",
+        "api.setup.app:app",
         host="0.0.0.0",
         port=8000,
         workers=4,
@@ -79,7 +79,7 @@ Examples:
     if args.prod:
         print(f"🏭 Starting production server on {args.host}:{args.port}")
         uvicorn.run(
-            "api.boot.app:app",
+            "api.setup.app:app",
             host=args.host,
             port=args.port,
             workers=4,
@@ -89,7 +89,7 @@ Examples:
     else:
         print(f"🚀 Starting development server on {args.host}:{args.port}")
         uvicorn.run(
-            "api.boot.app:app",
+            "api.setup.app:app",
             host=args.host,
             port=args.port,
             reload=True,

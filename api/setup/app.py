@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.routers import posts
 from api.routers import auth
-from api.boot.database import create_db_and_tables
+from api.setup.database import create_db_and_tables
 from contextlib import asynccontextmanager
 
 @asynccontextmanager

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from api.models.post import Post
 from typing import List
-from api.boot.dependencies import PostsRepositoryDep, CurrentUserDep
+from api.setup.dependencies import PostsRepositoryDep, CurrentUserDep
 
 router = APIRouter()
 

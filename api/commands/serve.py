@@ -30,7 +30,7 @@ def serve(
         typer.echo(f"🏭 Starting production server on {host}:{port} with {workers} workers")
 
         uvicorn.run(
-            "api.boot.app:app",
+            "api.setup.app:app",
             host=host,
             port=port,
             workers=workers,
@@ -43,7 +43,7 @@ def serve(
         typer.echo(f"🚀 Starting development server on {host}:{port}")
 
         uvicorn.run(
-            "api.boot.app:app",
+            "api.setup.app:app",
             host=host,
             port=port,
             reload=True,
