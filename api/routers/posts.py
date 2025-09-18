@@ -1,12 +1,12 @@
 from fastapi import APIRouter, HTTPException
 from api.models.post import Post
-from typing import List
+
 from api.setup.dependencies import PostsRepositoryDep, CurrentUserDep
 
 router = APIRouter()
 
-@router.get("", response_model=List[Post], tags=["posts"])
-async def list_posts(posts_repository: PostsRepositoryDep) -> List[Post]:
+@router.get("", response_model=list[Post], tags=["posts"])
+async def list_posts(posts_repository: PostsRepositoryDep) -> list[Post]:
     posts = await posts_repository.all_posts()
     return list(posts)
 
@@ -24,18 +24,18 @@ async def find_post(
 async def create_post(
     post: Post,
     posts_repository: PostsRepositoryDep,
-    user: CurrentUserDep
+    _user: CurrentUserDep
 ) -> Post:
     return await posts_repository.create_post(post)
 
 @router.put("/{post_id}", response_model=Post, tags=["posts"])
 async def update_post(
     post_id: int,
-    post_data: dict,
+    post: Post,
     posts_repository: PostsRepositoryDep,
-    user: CurrentUserDep
+    _user: CurrentUserDep
 ) -> Post:
-    updated_post = await posts_repository.update_post(post_id, post_data)
+    updated_post = await posts_repository.update_post(post_id, post)
     if not updated_post:
         raise HTTPException(status_code=404, detail="Post not found")
     return updated_post
@@ -44,7 +44,7 @@ async def update_post(
 async def delete_post(
     post_id: int,
     posts_repository: PostsRepositoryDep,
-    user: CurrentUserDep
+    _user: CurrentUserDep
 ):
     success = await posts_repository.delete_post(post_id)
     if not success:
