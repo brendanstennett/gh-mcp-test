@@ -1,0 +1,14 @@
+{
+  "name": "fastapi-app",
+  "version": "1.0.0",
+  "description": "FastAPI application with Svelte frontend",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"sleep 1 && npm run dev:frontend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "python cli.py serve"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
