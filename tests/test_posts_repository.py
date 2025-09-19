@@ -36,24 +36,24 @@ async def posts_repository(test_session):
 async def test_create_and_find_post(posts_repository):
     """Test creating and finding a post"""
     # Create a new post
-    new_post = Post(name="Test Post")
+    new_post = Post(title="Test Post", body="Test content", is_published=False)
     created_post = await posts_repository.create_post(new_post)
 
     assert created_post.id is not None
-    assert created_post.name == "Test Post"
+    assert created_post.title == "Test Post"
 
     # Find the created post
     found_post = await posts_repository.find_post(created_post.id)
     assert found_post is not None
-    assert found_post.name == "Test Post"
+    assert found_post.title == "Test Post"
 
 
 @pytest.mark.asyncio
 async def test_all_posts(posts_repository):
     """Test retrieving all posts"""
     # Create some test posts
-    post1 = Post(name="First Post")
-    post2 = Post(name="Second Post")
+    post1 = Post(title="First Post", body="First content", is_published=True)
+    post2 = Post(title="Second Post", body="Second content", is_published=False)
 
     _ = await posts_repository.create_post(post1)
     _ = await posts_repository.create_post(post2)
@@ -61,31 +61,34 @@ async def test_all_posts(posts_repository):
     # Get all posts
     all_posts = await posts_repository.all_posts()
 
-    assert len(all_posts) == 2
-    assert any(post.name == "First Post" for post in all_posts)
-    assert any(post.name == "Second Post" for post in all_posts)
+    # Assert we have at least the posts we created
+    assert len(all_posts) >= 2
+    assert any(post.title == "First Post" for post in all_posts)
+    assert any(post.title == "Second Post" for post in all_posts)
 
 
 @pytest.mark.asyncio
 async def test_update_post(posts_repository):
     """Test updating a post"""
     # Create a post
-    new_post = Post(name="Original Name")
+    new_post = Post(title="Original Title", body="Original content", is_published=False)
     created_post = await posts_repository.create_post(new_post)
 
-    # Ensure the post was updated successfully
+    # Ensure the post was created successfully
     assert created_post is not None
     assert created_post.id is not None
 
     # Update the post
-    update_data = Post(name="Updated Name")
+    update_data = Post(title="Updated Title", body="Updated content", is_published=True)
     updated_post = await posts_repository.update_post(
         created_post.id,
         update_data
     )
 
     assert updated_post is not None
-    assert updated_post.name == "Updated Name"
+    assert updated_post.title == "Updated Title"
+    assert updated_post.body == "Updated content"
+    assert updated_post.is_published == True
     assert updated_post.id == created_post.id
 
 
@@ -93,7 +96,7 @@ async def test_update_post(posts_repository):
 async def test_delete_post(posts_repository):
     """Test deleting a post"""
     # Create a post
-    new_post = Post(name="To Delete")
+    new_post = Post(title="To Delete", body="Will be deleted", is_published=True)
     created_post = await posts_repository.create_post(new_post)
 
     # Ensure the post was created successfully

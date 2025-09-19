@@ -3,11 +3,9 @@ from sqlmodel import select
 from api.models.post import Post
 from collections.abc import Sequence
 
-class PostsRepository:
-    session: AsyncSession
+from api.services.repositories.base_repository import BaseRepository
 
-    def __init__(self, session: AsyncSession):
-        self.session = session
+class PostsRepository(BaseRepository):
 
     async def all_posts(self) -> Sequence[Post]:
         """Retrieve all posts from the database"""
@@ -36,12 +34,7 @@ class PostsRepository:
         if not existing_post:
             return None
 
-        update_data = post_data.model_dump(exclude_unset=True, exclude={'id'})
-        existing_post = existing_post.model_copy(update=update_data)
-
-        await self.session.commit()
-        await self.session.refresh(existing_post)
-        return existing_post
+        return await self.update_model(existing_post, post_data, exclude={'id'})
 
 
     async def delete_post(self, post_id: int) -> bool:
