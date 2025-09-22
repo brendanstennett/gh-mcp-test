@@ -71,16 +71,16 @@ def client_with_mocks(mock_posts_repository, mock_current_user):
 @pytest.fixture
 def sample_post():
     """Create a sample post for testing"""
-    return Post(id=1, name="Test Post")
+    return Post(id=1, title="Test Post", body="Test body", is_published=True)
 
 
 @pytest.fixture
 def sample_posts():
     """Create a list of sample posts for testing"""
     return [
-        Post(id=1, name="First Post"),
-        Post(id=2, name="Second Post"),
-        Post(id=3, name="Third Post")
+        Post(id=1, title="First Post", body="First body", is_published=True),
+        Post(id=2, title="Second Post", body="Second body", is_published=True),
+        Post(id=3, title="Third Post", body="Third body", is_published=True)
     ]
 
 
@@ -98,9 +98,9 @@ class TestListPosts:
         assert response.status_code == 200
         data = response.json()
         assert len(data) == 3
-        assert data[0]["name"] == "First Post"
-        assert data[1]["name"] == "Second Post"
-        assert data[2]["name"] == "Third Post"
+        assert data[0]["title"] == "First Post"
+        assert data[1]["title"] == "Second Post"
+        assert data[2]["title"] == "Third Post"
         mock_repo.all_posts.assert_called_once()
 
     @pytest.mark.asyncio
@@ -131,7 +131,7 @@ class TestFindPost:
         assert response.status_code == 200
         data = response.json()
         assert data["id"] == 1
-        assert data["name"] == "Test Post"
+        assert data["title"] == "Test Post"
         mock_repo.find_post.assert_called_once_with(1)
 
     @pytest.mark.asyncio
@@ -166,33 +166,33 @@ class TestCreatePost:
         client, mock_repo, _ = client_with_mocks
         mock_repo.create_post.return_value = sample_post
 
-        post_data = {"name": "Test Post"}
+        post_data = {"title": "Test Post", "body": "Test body", "is_published": True}
         response = client.post("/api/v1/posts", json=post_data)
 
         assert response.status_code == 201
         data = response.json()
         assert data["id"] == 1
-        assert data["name"] == "Test Post"
+        assert data["title"] == "Test Post"
         # Verify the call was made with a Post object
         mock_repo.create_post.assert_called_once()
         call_args = mock_repo.create_post.call_args[0][0]
-        assert call_args.name == "Test Post"
+        assert call_args.title == "Test Post"
 
     @pytest.mark.asyncio
     async def test_create_post_with_id_specified(self, client_with_mocks):
         """Test post creation when ID is specified (should be ignored)"""
         client, mock_repo, _ = client_with_mocks
 
-        created_post = Post(id=1, name="Test Post")
+        created_post = Post(id=1, title="Test Post", body="Test body", is_published=True)
         mock_repo.create_post.return_value = created_post
 
-        post_data = {"id": 999, "name": "Test Post"}  # ID should be ignored
+        post_data = {"id": 999, "title": "Test Post", "body": "Test body", "is_published": True}  # ID should be ignored
         response = client.post("/api/v1/posts", json=post_data)
 
         assert response.status_code == 201
         data = response.json()
         assert data["id"] == 1  # Uses the ID from mock, not from request
-        assert data["name"] == "Test Post"
+        assert data["title"] == "Test Post"
         mock_repo.create_post.assert_called_once()
 
     @pytest.mark.asyncio
@@ -200,22 +200,22 @@ class TestCreatePost:
         """Test post creation with empty name"""
         client, mock_repo, _ = client_with_mocks
 
-        created_post = Post(id=1, name="")
+        created_post = Post(id=1, title="", body="", is_published=False)
         mock_repo.create_post.return_value = created_post
 
-        post_data = {"name": ""}
+        post_data = {"title": "", "body": "", "is_published": False}
         response = client.post("/api/v1/posts", json=post_data)
 
         assert response.status_code == 201
         data = response.json()
-        assert data["name"] == ""
+        assert data["title"] == ""
         mock_repo.create_post.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_create_post_without_auth(self):
         """Test post creation without authentication"""
         with TestClient(app) as client:
-            post_data = {"name": "Test Post"}
+            post_data = {"title": "Test Post", "body": "Test body", "is_published": True}
             response = client.post("/api/v1/posts", json=post_data)
 
             assert response.status_code == 401
@@ -228,21 +228,21 @@ class TestUpdatePost:
     async def test_update_post_success(self, client_with_mocks):
         """Test successful post update"""
         client, mock_repo, _ = client_with_mocks
-        updated_post = Post(id=1, name="Updated Post")
+        updated_post = Post(id=1, title="Updated Post", body="Updated body", is_published=True)
         mock_repo.update_post.return_value = updated_post
 
-        post_data = {"name": "Updated Post"}
+        post_data = {"title": "Updated Post", "body": "Updated body", "is_published": True}
         response = client.put("/api/v1/posts/1", json=post_data)
 
         assert response.status_code == 200
         data = response.json()
         assert data["id"] == 1
-        assert data["name"] == "Updated Post"
+        assert data["title"] == "Updated Post"
         # Verify the call was made correctly
         mock_repo.update_post.assert_called_once()
         call_args = mock_repo.update_post.call_args
         assert call_args[0][0] == 1  # post_id
-        assert call_args[0][1].name == "Updated Post"  # updated post data
+        assert call_args[0][1].title == "Updated Post"  # updated post data
 
     @pytest.mark.asyncio
     async def test_update_post_not_found(self, client_with_mocks):
@@ -250,7 +250,7 @@ class TestUpdatePost:
         client, mock_repo, _ = client_with_mocks
         mock_repo.update_post.return_value = None
 
-        post_data = {"name": "Updated Post"}
+        post_data = {"title": "Updated Post", "body": "Updated body", "is_published": True}
         response = client.put("/api/v1/posts/999", json=post_data)
 
         assert response.status_code == 404
@@ -263,23 +263,23 @@ class TestUpdatePost:
         """Test update with same name"""
         client, mock_repo, _ = client_with_mocks
 
-        updated_post = Post(id=1, name="Same Name")
+        updated_post = Post(id=1, title="Same Name", body="Same body", is_published=True)
         mock_repo.update_post.return_value = updated_post
 
-        post_data = {"name": "Same Name"}
+        post_data = {"title": "Same Name", "body": "Same body", "is_published": True}
         response = client.put("/api/v1/posts/1", json=post_data)
 
         assert response.status_code == 200
         data = response.json()
         assert data["id"] == 1
-        assert data["name"] == "Same Name"
+        assert data["title"] == "Same Name"
         mock_repo.update_post.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_update_post_without_auth(self):
         """Test post update without authentication"""
         with TestClient(app) as client:
-            post_data = {"name": "Updated Post"}
+            post_data = {"title": "Updated Post", "body": "Updated body", "is_published": True}
             response = client.put("/api/v1/posts/1", json=post_data)
 
             assert response.status_code == 401
@@ -340,10 +340,10 @@ class TestPostsControllerIntegration:
         client, mock_repo, _ = client_with_mocks
 
         # Create
-        created_post = Post(id=1, name="Test Post")
+        created_post = Post(id=1, title="Test Post", body="Test body", is_published=True)
         mock_repo.create_post.return_value = created_post
 
-        create_response = client.post("/api/v1/posts", json={"name": "Test Post"})
+        create_response = client.post("/api/v1/posts", json={"title": "Test Post", "body": "Test body", "is_published": True})
         assert create_response.status_code == 201
 
         # Read
@@ -351,16 +351,16 @@ class TestPostsControllerIntegration:
         get_response = client.get("/api/v1/posts/1")
         assert get_response.status_code == 200
         get_data = get_response.json()
-        assert get_data["name"] == "Test Post"
+        assert get_data["title"] == "Test Post"
 
         # Update
-        updated_post = Post(id=1, name="Updated Post")
+        updated_post = Post(id=1, title="Updated Post", body="Updated body", is_published=True)
         mock_repo.update_post.return_value = updated_post
 
-        update_response = client.put("/api/v1/posts/1", json={"name": "Updated Post"})
+        update_response = client.put("/api/v1/posts/1", json={"title": "Updated Post", "body": "Updated body", "is_published": True})
         assert update_response.status_code == 200
         update_data = update_response.json()
-        assert update_data["name"] == "Updated Post"
+        assert update_data["title"] == "Updated Post"
 
         # Delete
         mock_repo.delete_post.return_value = True
@@ -384,4 +384,4 @@ class TestPostsControllerIntegration:
         response = client.get("/api/v1/posts/1")
         assert response.status_code == 200
         data = response.json()
-        assert data["name"] == "First Post"
+        assert data["title"] == "First Post"
