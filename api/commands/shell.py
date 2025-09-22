@@ -22,6 +22,7 @@ from api.models.post import Post
 from api.models.user import User
 from api.services.repositories.posts_repository import PostsRepository
 from api.setup.database import async_session_maker, engine
+from api.commands.shell_helpers.create_admin_user import create_admin_user
 
 console = Console()
 
@@ -52,12 +53,17 @@ def shell():
         'asyncio': asyncio,
     }
 
+    helpers = {
+        'create_admin_user': create_admin_user,
+    }
+
     # Pre-loaded variables for the shell
     shell_locals = {
         **models,
         **repos,
         **database_utils,
-        **utilities
+        **utilities,
+        **helpers
     }
 
     # Display welcome banner
@@ -69,6 +75,7 @@ def shell():
     banner_table.add_row("Repositories", ", ".join(repos.keys()))
     banner_table.add_row("Database", ", ".join(database_utils.keys()))
     banner_table.add_row("Utilities", ", ".join(utilities.keys()))
+    banner_table.add_row("Helpers", ", ".join(helpers.keys()))
 
     console.print("\n")
     console.print(banner_table)
@@ -76,8 +83,10 @@ def shell():
     console.print("  [green]post = Post(title='Hello', body='World', is_published=True)[/green]")
     if has_ipython:
         console.print("  [green]await posts_repository.create_post(post)[/green]")
+        console.print("  [green]await create_admin_user('admin@example.com', 'password123')[/green]")
     else:
         console.print("  [green]created = asyncio.run(posts_repository.create_post(post))[/green]")
+        console.print("  [green]admin = asyncio.run(create_admin_user('admin@example.com', 'password123'))[/green]")
     console.print("  [dim]# Session will be automatically closed on exit[/dim]")
     console.print("\n")
 

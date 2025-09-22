@@ -13,7 +13,7 @@ from alembic import context
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from api.setup.database import sqlite_url
-from api.models.user import Base, User
+from api.models.user import User
 from api.models.post import Post
 from sqlmodel import SQLModel
 
@@ -30,7 +30,7 @@ if config.config_file_name is not None:
 config.set_main_option("sqlalchemy.url", sqlite_url.replace("+aiosqlite", ""))
 
 # Combine metadata from both SQLModel and Base
-target_metadata = [SQLModel.metadata, Base.metadata]
+target_metadata = [SQLModel.metadata]
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
