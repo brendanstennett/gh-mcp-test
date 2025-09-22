@@ -24,8 +24,9 @@ async def find_post(
 async def create_post(
     post: Post,
     posts_repository: PostsRepositoryDep,
-    _user: CurrentUserDep
+    user: CurrentUserDep
 ) -> Post:
+    post.user_id = user.id
     return await posts_repository.create_post(post)
 
 @router.put("/{post_id}", response_model=Post, tags=["posts"])

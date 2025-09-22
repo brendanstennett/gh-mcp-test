@@ -10,3 +10,6 @@ wheels/
 .venv
 *.sqlite
 node_modules/
+
+# Editor
+.idea
