@@ -13,32 +13,13 @@ async def test_session():
     engine = create_async_engine("sqlite+aiosqlite:///:memory:")
     async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
-    # Manually create tables to avoid foreign key issues during testing
+    # Create tables from model metadata
     async with engine.begin() as conn:
-        from sqlalchemy import text
-
-        await conn.execute(text("""
-            CREATE TABLE user (
-                id CHAR(36) NOT NULL,
-                email VARCHAR(320) NOT NULL,
-                hashed_password VARCHAR(1024) NOT NULL,
-                is_active BOOLEAN NOT NULL,
-                is_superuser BOOLEAN NOT NULL,
-                is_verified BOOLEAN NOT NULL,
-                PRIMARY KEY (id)
-            )
-        """))
-
-        await conn.execute(text("""
-            CREATE TABLE post (
-                id INTEGER NOT NULL,
-                title VARCHAR NOT NULL,
-                body VARCHAR NOT NULL,
-                is_published BOOLEAN NOT NULL,
-                user_id CHAR(36),
-                PRIMARY KEY (id)
-            )
-        """))
+        from sqlmodel import SQLModel
+        # Import models to ensure they're registered with SQLModel metadata
+        from api.models.user import User  # noqa: F401
+        from api.models.post import Post  # noqa: F401
+        await conn.run_sync(SQLModel.metadata.create_all)
 
     async with async_session_maker() as session:
         yield session
