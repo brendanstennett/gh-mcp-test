@@ -1,8 +1,9 @@
-"""
-CLI Integration Tests
-
-Tests for the Typer CLI commands to ensure they work correctly.
-"""
+# pyright: reportUnknownVariableType=false
+# pyright: reportMissingParameterType=false
+# pyright: reportUnknownParameterType=false
+# pyright: reportUnknownArgumentType=false
+# pyright: reportAny=false
+# pyright: reportUnknownMemberType=false
 
 import pytest
 from typer.testing import CliRunner

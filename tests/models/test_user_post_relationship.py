@@ -1,3 +1,10 @@
+# pyright: reportUnknownVariableType=false
+# pyright: reportMissingParameterType=false
+# pyright: reportUnknownParameterType=false
+# pyright: reportUnknownArgumentType=false
+# pyright: reportAny=false
+# pyright: reportUnknownMemberType=false
+
 import pytest
 import pytest_asyncio
 import uuid
@@ -26,7 +33,7 @@ async def test_session():
 
 
 @pytest_asyncio.fixture
-async def posts_repository(test_session):
+async def posts_repository(test_session)->PostsRepository:
     """Create a PostsRepository instance with test session"""
     return PostsRepository(test_session)
 

@@ -42,10 +42,11 @@ def mock_posts_repository() -> PostsRepository:
 @pytest.fixture
 def mock_current_user():
     """Create a mock current user"""
-    user = User()
-    user.id = uuid.UUID("123e4567-e89b-12d3-a456-426614174000")
-    user.email = "test@example.com"
-    user.is_active = True
+    user = User(
+        id=uuid.UUID("123e4567-e89b-12d3-a456-426614174000"),
+        email="test@example.com",
+        is_active=True
+    )
     return user
 
 

@@ -57,3 +57,42 @@ filterwarnings = [
 dev = [
     "pytest-mock>=3.15.1",
 ]
+
+[tool.basedpyright]
+# Basic configuration
+pythonVersion = "3.12"
+typeCheckingMode = "standard"
+reportMissingImports = "error"
+reportMissingTypeStubs = "warning"
+
+# Relax common warnings
+reportUnknownMemberType = "warning"
+reportUnknownVariableType = "warning"
+reportUnknownArgumentType = "warning"
+reportUnknownParameterType = "warning"
+reportGeneralTypeIssues = "warning"
+reportOptionalMemberAccess = "warning"
+reportOptionalSubscript = "warning"
+reportPrivateUsage = "warning"
+reportConstantRedefinition = "warning"
+reportIncompatibleMethodOverride = "warning"
+reportIncompatibleVariableOverride = "warning"
+reportUntypedFunctionDecorator = "none"
+reportUntypedClassDecorator = "none"
+reportUntypedBaseClass = "warning"
+reportUntypedNamedTuple = "none"
+
+# Include/exclude paths
+include = [
+    "api",
+    "cli.py",
+    "__main__.py"
+]
+exclude = [
+    "**/__pycache__",
+    "**/.pytest_cache",
+    "**/node_modules",
+    "**/.git",
+    "**/build",
+    "**/dist"
+]

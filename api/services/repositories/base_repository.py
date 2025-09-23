@@ -1,12 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import TypeVar, Protocol
+from typing import TypeVar
+from sqlmodel import SQLModel
 
 T = TypeVar('T')
-
-class ModelProtocol(Protocol):
-    """Protocol for models that support model_dump method"""
-    def model_dump(self, *, exclude_unset: bool = False, exclude: set[str] | None = None) -> dict[str, object]:
-        ...
 
 class BaseRepository:
     session: AsyncSession
@@ -14,7 +10,7 @@ class BaseRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def update_model(self, existing_model: T, update_data_model: ModelProtocol, exclude: set[str]) -> T:
+    async def update_model(self, existing_model: T, update_data_model: SQLModel, exclude: set[str]) -> T:
         """Update an existing model with data from another model"""
         update_data = update_data_model.model_dump(exclude_unset=True, exclude=exclude)
         for field, value in update_data.items():

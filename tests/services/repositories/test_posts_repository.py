@@ -11,7 +11,6 @@ from sqlmodel import SQLModel
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from api.services.repositories.posts_repository import PostsRepository
 from api.models.post import Post
-from api.models.user import User
 
 
 @pytest_asyncio.fixture
@@ -29,7 +28,7 @@ async def test_session():
 
 
 @pytest_asyncio.fixture
-async def posts_repository(test_session):
+async def posts_repository(test_session)->PostsRepository:
     """Create a PostsRepository instance with test session"""
     return PostsRepository(test_session)
 

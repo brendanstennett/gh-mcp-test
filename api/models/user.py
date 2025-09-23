@@ -1,7 +1,6 @@
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional, Any, TYPE_CHECKING
 import uuid
 from sqlmodel import SQLModel, Field, Relationship
-from sqlalchemy import String, Boolean
 
 if TYPE_CHECKING:
     from api.models.post import Post
@@ -17,3 +16,9 @@ class User(SQLModel, table=True):
 
     # Relationship to posts
     posts: List["Post"] = Relationship(back_populates="author")
+
+    def __init__(self, **kwargs: Any):
+        super().__init__(**kwargs)
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
