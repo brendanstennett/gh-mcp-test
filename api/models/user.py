@@ -5,6 +5,7 @@ from sqlmodel import SQLModel, Field, Relationship
 if TYPE_CHECKING:
     from api.models.post import Post
 
+
 class User(SQLModel, table=True):
     # Replicate fastapi-users fields for compatibility
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)

@@ -1,0 +1,74 @@
+# Extend the line length to 120 characters (more reasonable for modern screens)
+line-length = 120
+
+# Target Python 3.8+ for broad compatibility
+target-version = "py38"
+
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "migrations",
+]
+
+[lint]
+# Select rules to enforce
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # Pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "S",   # flake8-bandit (security)
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "PIE", # flake8-pie
+    "T20", # flake8-print
+    "RUF", # Ruff-specific rules
+]
+
+# Ignore specific rules that are too strict or not applicable
+ignore = [
+    "S101",  # Use of assert detected (common in tests)
+    "T201",  # print found (useful for debugging)
+    "T203",  # pprint found (useful for debugging)
+]
+
+# Allow unused variables when they start with an underscore
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[lint.per-file-ignores]
+# Tests can use assertions and print statements
+"tests/**/*" = ["S101", "T201", "T203"]
+# Allow unused imports in __init__.py files
+"__init__.py" = ["F401", "E402"]
+
+[lint.isort]
+# Keep imports organized and compatible with Black
+combine-as-imports = true
+force-wrap-aliases = true
+split-on-trailing-comma = true
+
+[format]
+# Use double quotes for strings
+quote-style = "double"
+# Use trailing commas
+skip-magic-trailing-comma = false

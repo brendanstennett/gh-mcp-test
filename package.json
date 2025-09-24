@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"sleep 1 && npm run dev:frontend\"",
     "dev:frontend": "cd frontend && npm run dev",
-    "dev:backend": "python cli.py serve"
+    "dev:backend": "python cli.py serve",
+    "format": "ruff format api/ tests/"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

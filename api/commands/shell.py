@@ -10,6 +10,7 @@ import code
 
 try:
     from IPython import start_ipython  # pyright: ignore[reportUnknownVariableType]
+
     has_ipython = True
 except ImportError:
     start_ipython = None
@@ -26,6 +27,7 @@ from api.commands.shell_helpers.create_admin_user import create_admin_user
 
 console = Console()
 
+
 def shell():
     """Start an interactive Python shell with models and repositories pre-loaded."""
 
@@ -34,37 +36,28 @@ def shell():
 
     session = asyncio.run(setup_session())
 
-    models = {
-        'Post': Post,
-        'User': User
-    }
+    models = {"Post": Post, "User": User}
 
     repos = {
-        'posts_repository': PostsRepository(session),
+        "posts_repository": PostsRepository(session),
     }
 
     database_utils = {
-        'engine': engine,
-        'session': session,
-        'async_session_maker': async_session_maker,
+        "engine": engine,
+        "session": session,
+        "async_session_maker": async_session_maker,
     }
 
     utilities = {
-        'asyncio': asyncio,
+        "asyncio": asyncio,
     }
 
     helpers = {
-        'create_admin_user': create_admin_user,
+        "create_admin_user": create_admin_user,
     }
 
     # Pre-loaded variables for the shell
-    shell_locals = {
-        **models,
-        **repos,
-        **database_utils,
-        **utilities,
-        **helpers
-    }
+    shell_locals = {**models, **repos, **database_utils, **utilities, **helpers}
 
     # Display welcome banner
     banner_table = Table(title="FastAPI App Interactive Shell", show_header=False)
@@ -97,11 +90,7 @@ def shell():
             start_ipython(argv=[], user_ns=shell_locals)
         else:
             console.print("[yellow]Note: Install IPython for better async support: pip install ipython[/yellow]")
-            code.interact(
-                banner="",
-                local=shell_locals,
-                exitmsg="[bold red]Exiting shell...[/bold red]"
-            )
+            code.interact(banner="", local=shell_locals, exitmsg="[bold red]Exiting shell...[/bold red]")
     finally:
         asyncio.run(session.close())
         console.print("[bold green]Session closed.[/bold green]")

@@ -30,12 +30,7 @@ def serve(
         typer.echo(f"🏭 Starting production server on {host}:{port} with {workers} workers")
 
         uvicorn.run(
-            "api.setup.app:app",
-            host=host,
-            port=port,
-            workers=workers,
-            log_level=effective_log_level,
-            access_log=False
+            "api.setup.app:app", host=host, port=port, workers=workers, log_level=effective_log_level, access_log=False
         )
     else:
         # Development mode configuration
@@ -50,5 +45,5 @@ def serve(
             reload_dirs=["api"],
             log_level=effective_log_level,
             access_log=True,
-            reload_excludes=["*.pyc", "*.pyo", "__pycache__", ".git", ".pytest_cache"]
+            reload_excludes=["*.pyc", "*.pyo", "__pycache__", ".git", ".pytest_cache"],
         )

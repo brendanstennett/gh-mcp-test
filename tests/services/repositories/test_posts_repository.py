@@ -28,7 +28,7 @@ async def test_session():
 
 
 @pytest_asyncio.fixture
-async def posts_repository(test_session)->PostsRepository:
+async def posts_repository(test_session) -> PostsRepository:
     """Create a PostsRepository instance with test session"""
     return PostsRepository(test_session)
 
@@ -81,10 +81,7 @@ async def test_update_post(posts_repository):
 
     # Update the post
     update_data = Post(title="Updated Title", body="Updated content", is_published=True)
-    updated_post = await posts_repository.update_post(
-        created_post.id,
-        update_data
-    )
+    updated_post = await posts_repository.update_post(created_post.id, update_data)
 
     assert updated_post is not None
     assert updated_post.title == "Updated Title"

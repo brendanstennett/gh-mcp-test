@@ -38,7 +38,7 @@ def test_version_command():
     """Test the version command."""
     result = runner.invoke(app, ["version"])
     assert result.exit_code == 0
-    assert re.match(r'[0-9]+\.[0-9]+\.[0-9]+', result.stdout.strip())
+    assert re.match(r"[0-9]+\.[0-9]+\.[0-9]+", result.stdout.strip())
 
 
 def test_invalid_command():
@@ -46,7 +46,7 @@ def test_invalid_command():
     result = runner.invoke(app, ["invalid-command"])
     assert result.exit_code != 0
     # Typer puts error messages in stdout when using CliRunner
-    assert ("No such command" in result.stdout or "No such command" in result.stderr)
+    assert "No such command" in result.stdout or "No such command" in result.stderr
 
 
 def test_serve_with_options():

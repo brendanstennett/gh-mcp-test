@@ -17,7 +17,6 @@ def version():
     along with other relevant version information.
     """
 
-
     try:
         pyproject_path = Path("pyproject.toml")
         if pyproject_path.exists():

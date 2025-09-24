@@ -4,16 +4,16 @@ Admin User Creation Helper
 Provides functionality to create admin users with superuser privileges.
 """
 
-import asyncio
 from rich.console import Console
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.models.user import User
 from api.setup.database import async_session_maker
 from api.setup.auth import get_user_db, get_user_manager
 
 console = Console()
 
-async def create_admin_user(email: str, password: str, session = None):
+
+async def create_admin_user(email: str, password: str, session: AsyncSession | None = None):
     """
     Create an admin user with superuser privileges.
 
@@ -47,12 +47,12 @@ async def create_admin_user(email: str, password: str, session = None):
             password=password,
             is_active=True,
             is_superuser=True,
-            is_verified=True
+            is_verified=True,
         )
 
         user = await user_manager.create(user_create)
 
-        console.print(f"[bold green]Admin user created successfully![/bold green]")
+        console.print("[bold green]Admin user created successfully![/bold green]")
         console.print(f"Email: {user.email}")
         console.print(f"ID: {user.id}")
         console.print(f"Is superuser: {user.is_superuser}")

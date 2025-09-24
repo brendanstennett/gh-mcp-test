@@ -18,7 +18,10 @@ from api.setup.database import get_async_session
 # Secret key for JWT - in production, use environment variables
 SECRET = "your-secret-key-here"  # TODO: Move to environment variables
 
-async def get_user_db(session: AsyncSession = Depends(get_async_session)) -> AsyncGenerator[SQLAlchemyUserDatabase[User, uuid.UUID], None]:
+
+async def get_user_db(
+    session: AsyncSession = Depends(get_async_session),
+) -> AsyncGenerator[SQLAlchemyUserDatabase[User, uuid.UUID], None]:
     yield SQLAlchemyUserDatabase(session, User)
 
 
@@ -29,6 +32,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     This handles user registration, authentication, and user management
     operations with your async SQLAlchemy session.
     """
+
     reset_password_token_secret = SECRET
     verification_token_secret = SECRET
 
@@ -38,21 +42,19 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         print(f"User {user.id} has registered.")
 
     @override
-    async def on_after_forgot_password(
-        self, user: User, token: str, request: Request | None = None
-    ):
+    async def on_after_forgot_password(self, user: User, token: str, request: Request | None = None):
         """Called after a user requests password reset."""
         print(f"User {user.id} has forgot their password. Reset token: {token}")
 
     @override
-    async def on_after_request_verify(
-        self, user: User, token: str, request: Request | None = None
-    ):
+    async def on_after_request_verify(self, user: User, token: str, request: Request | None = None):
         """Called after a user requests verification."""
         print(f"Verification requested for user {user.id}. Verification token: {token}")
 
 
-async def get_user_manager(user_db: SQLAlchemyUserDatabase[User, uuid.UUID] = Depends(get_user_db)) -> AsyncGenerator[UserManager, None]:
+async def get_user_manager(
+    user_db: SQLAlchemyUserDatabase[User, uuid.UUID] = Depends(get_user_db),
+) -> AsyncGenerator[UserManager, None]:
     """
     Dependency to get the user manager instance.
 
@@ -67,8 +69,6 @@ async def get_user_manager(user_db: SQLAlchemyUserDatabase[User, uuid.UUID] = De
 
 def get_jwt_strategy() -> JWTStrategy[User, uuid.UUID]:
     return JWTStrategy(secret=SECRET, lifetime_seconds=3600)
-
-
 
 
 # Authentication backend setup

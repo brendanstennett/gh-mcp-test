@@ -42,11 +42,7 @@ def mock_posts_repository() -> PostsRepository:
 @pytest.fixture
 def mock_current_user():
     """Create a mock current user"""
-    user = User(
-        id=uuid.UUID("123e4567-e89b-12d3-a456-426614174000"),
-        email="test@example.com",
-        is_active=True
-    )
+    user = User(id=uuid.UUID("123e4567-e89b-12d3-a456-426614174000"), email="test@example.com", is_active=True)
     return user
 
 
@@ -81,7 +77,7 @@ def sample_posts():
     return [
         Post(id=1, title="First Post", body="First body", is_published=True),
         Post(id=2, title="Second Post", body="Second body", is_published=True),
-        Post(id=3, title="Third Post", body="Third body", is_published=True)
+        Post(id=3, title="Third Post", body="Third body", is_published=True),
     ]
 
 
@@ -344,7 +340,9 @@ class TestPostsControllerIntegration:
         created_post = Post(id=1, title="Test Post", body="Test body", is_published=True)
         mock_repo.create_post.return_value = created_post
 
-        create_response = client.post("/api/v1/posts", json={"title": "Test Post", "body": "Test body", "is_published": True})
+        create_response = client.post(
+            "/api/v1/posts", json={"title": "Test Post", "body": "Test body", "is_published": True}
+        )
         assert create_response.status_code == 201
 
         # Read
@@ -358,7 +356,9 @@ class TestPostsControllerIntegration:
         updated_post = Post(id=1, title="Updated Post", body="Updated body", is_published=True)
         mock_repo.update_post.return_value = updated_post
 
-        update_response = client.put("/api/v1/posts/1", json={"title": "Updated Post", "body": "Updated body", "is_published": True})
+        update_response = client.put(
+            "/api/v1/posts/1", json={"title": "Updated Post", "body": "Updated body", "is_published": True}
+        )
         assert update_response.status_code == 200
         update_data = update_response.json()
         assert update_data["title"] == "Updated Post"

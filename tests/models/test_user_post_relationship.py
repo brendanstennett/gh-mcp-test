@@ -23,9 +23,11 @@ async def test_session():
     # Create tables from model metadata
     async with engine.begin() as conn:
         from sqlmodel import SQLModel
+
         # Import models to ensure they're registered with SQLModel metadata
         from api.models.user import User  # noqa: F401
         from api.models.post import Post  # noqa: F401
+
         await conn.run_sync(SQLModel.metadata.create_all)
 
     async with async_session_maker() as session:
@@ -33,7 +35,7 @@ async def test_session():
 
 
 @pytest_asyncio.fixture
-async def posts_repository(test_session)->PostsRepository:
+async def posts_repository(test_session) -> PostsRepository:
     """Create a PostsRepository instance with test session"""
     return PostsRepository(test_session)
 
@@ -45,12 +47,7 @@ async def test_create_post_with_user_id(posts_repository):
     test_user_id = uuid.uuid4()
 
     # Create a post with user_id
-    new_post = Post(
-        title="Test Post",
-        body="Test content",
-        is_published=False,
-        user_id=test_user_id
-    )
+    new_post = Post(title="Test Post", body="Test content", is_published=False, user_id=test_user_id)
     created_post = await posts_repository.create_post(new_post)
 
     assert created_post.id is not None
@@ -68,11 +65,7 @@ async def test_create_post_with_user_id(posts_repository):
 async def test_create_post_without_user_id(posts_repository):
     """Test creating a post without a user_id (should be None)"""
     # Create a post without user_id
-    new_post = Post(
-        title="Test Post No User",
-        body="Test content",
-        is_published=False
-    )
+    new_post = Post(title="Test Post No User", body="Test content", is_published=False)
     created_post = await posts_repository.create_post(new_post)
 
     assert created_post.id is not None
@@ -98,6 +91,7 @@ async def test_find_posts_by_user_id(posts_repository, test_session):
 
     # Query posts for user1 directly with SQLAlchemy
     from sqlmodel import select
+
     result = await test_session.execute(select(Post).where(Post.user_id == user1_id))
     user1_posts = result.scalars().all()
 

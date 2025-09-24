@@ -23,7 +23,13 @@ def database():
 
 
 def init_db(
-    force: Annotated[bool, typer.Option("--force", help="Force recreate all tables (WARNING: This will delete existing data)")] = False,
+    force: Annotated[
+        bool,
+        typer.Option(
+            "--force",
+            help="Force recreate all tables (WARNING: This will delete existing data)",
+        ),
+    ] = False,
     verbose: Annotated[bool, typer.Option("--verbose", "-v", help="Show detailed output")] = False,
 ):
     """
@@ -48,6 +54,7 @@ def init_db(
         typer.echo("✅ Database initialized successfully!")
 
         if verbose:
+
             async def show_table_info():
                 async with engine.begin() as conn:
                     result = await conn.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))
@@ -107,7 +114,7 @@ def check_db(
                 db_info_result = await conn.execute(text("PRAGMA database_list"))
                 db_info = db_info_result.fetchall()
                 for db in db_info:
-                    if db[1] == 'main':  # Main database
+                    if db[1] == "main":  # Main database
                         typer.echo(f"🗄️  Database file: {db[2]}")
                         break
 

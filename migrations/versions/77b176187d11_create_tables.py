@@ -1,7 +1,9 @@
+# pyright: reportUnknownArgumentType=false
+
 """create tables
 
 Revision ID: 77b176187d11
-Revises: 
+Revises:
 Create Date: 2025-09-22 15:08:10.257877
 
 """

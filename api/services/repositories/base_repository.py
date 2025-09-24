@@ -2,7 +2,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import TypeVar
 from sqlmodel import SQLModel
 
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 class BaseRepository:
     session: AsyncSession

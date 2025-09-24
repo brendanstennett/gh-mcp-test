@@ -5,8 +5,8 @@ from collections.abc import Sequence
 
 from api.services.repositories.base_repository import BaseRepository
 
-class PostsRepository(BaseRepository):
 
+class PostsRepository(BaseRepository):
     async def all_posts(self) -> Sequence[Post]:
         """Retrieve all posts from the database"""
         result = await self.session.execute(select(Post))
@@ -34,8 +34,7 @@ class PostsRepository(BaseRepository):
         if not existing_post:
             return None
 
-        return await self.update_model(existing_post, post_data, exclude={'id'})
-
+        return await self.update_model(existing_post, post_data, exclude={"id"})
 
     async def delete_post(self, post_id: int) -> bool:
         """Delete a post by ID"""
