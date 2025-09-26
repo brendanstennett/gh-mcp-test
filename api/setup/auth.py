@@ -1,5 +1,10 @@
+import os
+import uuid
+from collections.abc import AsyncGenerator
+from typing import Annotated, override
+
 from fastapi import Depends, Request
-from fastapi_users import BaseUserManager, FastAPIUsers
+from fastapi_users import BaseUserManager, FastAPIUsers, UUIDIDMixin
 from fastapi_users.authentication import (
     AuthenticationBackend,
     CookieTransport,
@@ -7,20 +12,18 @@ from fastapi_users.authentication import (
 )
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
-from collections.abc import AsyncGenerator
-from fastapi_users import UUIDIDMixin
-from typing import override
-import uuid
 
 from api.models.user import User
 from api.setup.database import get_async_session
 
-# Secret key for JWT - in production, use environment variables
-SECRET = "your-secret-key-here"  # TODO: Move to environment variables
+# TODO: Will need better config/secret management
+SECRET: str = os.getenv("JWT_SECRET", "")
+if SECRET == "":
+    raise ValueError("JWT_SECRET environment variable is not set")
 
 
 async def get_user_db(
-    session: AsyncSession = Depends(get_async_session),
+    session: Annotated[AsyncSession, Depends(get_async_session)],
 ) -> AsyncGenerator[SQLAlchemyUserDatabase[User, uuid.UUID], None]:
     yield SQLAlchemyUserDatabase(session, User)
 
@@ -53,7 +56,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
 
 
 async def get_user_manager(
-    user_db: SQLAlchemyUserDatabase[User, uuid.UUID] = Depends(get_user_db),
+    user_db: Annotated[SQLAlchemyUserDatabase[User, uuid.UUID], Depends(get_user_db)],
 ) -> AsyncGenerator[UserManager, None]:
     """
     Dependency to get the user manager instance.

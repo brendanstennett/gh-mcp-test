@@ -5,10 +5,12 @@
 # pyright: reportAny=false
 # pyright: reportUnknownMemberType=false
 
+import re
+
 import pytest
 from typer.testing import CliRunner
+
 from cli import app
-import re
 
 runner = CliRunner()
 

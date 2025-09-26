@@ -1,5 +1,6 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import TypeVar
+
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import SQLModel
 
 T = TypeVar("T")

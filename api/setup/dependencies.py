@@ -1,15 +1,15 @@
-from typing import Annotated
-from collections.abc import AsyncGenerator
-from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 import uuid
+from collections.abc import AsyncGenerator
+from typing import Annotated
 
-from api.setup.database import get_async_session
+from fastapi import Depends
+from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from api.models.user import User
-from api.setup.auth import UserManager
 from api.services.repositories.posts_repository import PostsRepository
-from api.setup.auth import current_user, current_superuser
+from api.setup.auth import UserManager, current_superuser, current_user
+from api.setup.database import get_async_session
 
 # Database Dependencies
 AsyncSessionDep = Annotated[AsyncSession, Depends(get_async_session)]

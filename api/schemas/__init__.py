@@ -6,6 +6,6 @@ These schemas define the structure and validation for data exchanged
 through the API endpoints.
 """
 
-from .user import UserRead, UserCreate, UserUpdate
+from .user import UserCreate, UserRead, UserUpdate
 
-__all__ = ["UserRead", "UserCreate", "UserUpdate"]
+__all__ = ["UserCreate", "UserRead", "UserUpdate"]

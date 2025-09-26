@@ -12,7 +12,7 @@ from typing_extensions import Annotated
 
 def serve(
     prod: Annotated[bool, typer.Option("--prod", help="Run in production mode (no reload, multiple workers)")] = False,
-    host: Annotated[str, typer.Option("--host", help="Host to bind the server to")] = "0.0.0.0",
+    host: Annotated[str, typer.Option("--host", help="Host to bind the server to")] = "127.0.0.1",
     port: Annotated[int, typer.Option("--port", help="Port to bind the server to")] = 8000,
     workers: Annotated[int, typer.Option("--workers", help="Number of worker processes (production mode only)")] = 4,
     log_level: Annotated[str | None, typer.Option("--log-level", help="Log level")] = None,

@@ -6,10 +6,12 @@ including database initialization, migration, and maintenance operations.
 """
 
 import asyncio
+
 import typer
-from typing_extensions import Annotated
-from api.setup.database import create_db_and_tables, engine
 from sqlmodel import text
+from typing_extensions import Annotated
+
+from api.setup.database import create_db_and_tables, engine
 
 
 def database():
@@ -19,7 +21,6 @@ def database():
     This is a placeholder for the database command group. Individual
     database operations should be implemented as separate functions.
     """
-    pass
 
 
 def init_db(
@@ -68,8 +69,8 @@ def init_db(
             asyncio.run(show_table_info())
 
     except Exception as e:
-        typer.echo(f"❌ Database initialization failed: {str(e)}")
-        raise typer.Exit(1)
+        typer.echo(f"❌ Database initialization failed: {e!s}")
+        raise typer.Exit(1) from e
 
 
 def check_db(
@@ -102,7 +103,7 @@ def check_db(
                     typer.echo("\n📈 Row counts:")
                     for table in tables:
                         try:
-                            count_result = await conn.execute(text(f"SELECT COUNT(*) FROM {table}"))
+                            count_result = await conn.execute(text(f"SELECT COUNT(*) FROM {table}"))  # noqa: S608
                             count = count_result.scalar()
                             typer.echo(f"  - {table}: {count} rows")
                         except Exception:
@@ -122,8 +123,8 @@ def check_db(
         asyncio.run(check_db_async())
 
     except Exception as e:
-        typer.echo(f"❌ Database connection failed: {str(e)}")
-        raise typer.Exit(1)
+        typer.echo(f"❌ Database connection failed: {e!s}")
+        raise typer.Exit(1) from e
 
 
 def reset_db():
@@ -155,5 +156,5 @@ def reset_db():
         typer.echo("🔄 All tables have been recreated.")
 
     except Exception as e:
-        typer.echo(f"❌ Database reset failed: {str(e)}")
-        raise typer.Exit(1)
+        typer.echo(f"❌ Database reset failed: {e!s}")
+        raise typer.Exit(1) from e

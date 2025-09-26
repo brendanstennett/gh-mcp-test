@@ -1,6 +1,7 @@
 import uuid
-from typing import Optional, Any, TYPE_CHECKING
-from sqlmodel import SQLModel, Field, Relationship
+from typing import TYPE_CHECKING, Any, Optional
+
+from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from api.models.user import User

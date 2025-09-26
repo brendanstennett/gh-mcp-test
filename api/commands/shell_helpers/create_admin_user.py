@@ -7,8 +7,8 @@ Provides functionality to create admin users with superuser privileges.
 from rich.console import Console
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.setup.database import async_session_maker
 from api.setup.auth import get_user_db, get_user_manager
+from api.setup.database import async_session_maker
 
 console = Console()
 

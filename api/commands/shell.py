@@ -7,6 +7,9 @@ Starts a Python REPL with models and repositories pre-loaded for easy interactio
 
 import asyncio
 import code
+from typing import Any
+
+from sqlmodel import SQLModel
 
 try:
     from IPython import start_ipython  # pyright: ignore[reportUnknownVariableType]
@@ -19,11 +22,11 @@ except ImportError:
 from rich.console import Console
 from rich.table import Table
 
+from api.commands.shell_helpers.create_admin_user import create_admin_user
 from api.models.post import Post
 from api.models.user import User
 from api.services.repositories.posts_repository import PostsRepository
 from api.setup.database import async_session_maker, engine
-from api.commands.shell_helpers.create_admin_user import create_admin_user
 
 console = Console()
 
@@ -36,13 +39,13 @@ def shell():
 
     session = asyncio.run(setup_session())
 
-    models = {"Post": Post, "User": User}
+    models: dict[str, type[SQLModel]] = {"Post": Post, "User": User}
 
     repos = {
         "posts_repository": PostsRepository(session),
     }
 
-    database_utils = {
+    database_utils: dict[str, Any] = {
         "engine": engine,
         "session": session,
         "async_session_maker": async_session_maker,
@@ -57,7 +60,7 @@ def shell():
     }
 
     # Pre-loaded variables for the shell
-    shell_locals = {**models, **repos, **database_utils, **utilities, **helpers}
+    shell_locals: dict[str, Any] = {**models, **repos, **database_utils, **utilities, **helpers}
 
     # Display welcome banner
     banner_table = Table(title="FastAPI App Interactive Shell", show_header=False)

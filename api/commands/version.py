@@ -4,9 +4,10 @@ Version Command Module
 This module contains the version command for displaying the FastAPI application version.
 """
 
-import typer
-import tomllib
 from pathlib import Path
+
+import tomllib
+import typer
 
 
 def version():

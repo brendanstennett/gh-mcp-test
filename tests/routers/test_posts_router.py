@@ -5,18 +5,19 @@
 # pyright: reportAny=false
 # pyright: reportUnknownMemberType=false
 
-import pytest
 import uuid
 from unittest.mock import create_autospec
+
+import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 
-from api.setup.app import app
 from api.models.post import Post
 from api.models.user import User
-from api.setup.dependencies import get_posts_repository
-from api.setup.auth import current_user
 from api.services.repositories.posts_repository import PostsRepository
+from api.setup.app import app
+from api.setup.auth import current_user
+from api.setup.dependencies import get_posts_repository
 
 
 @pytest.fixture

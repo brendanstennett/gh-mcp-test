@@ -14,17 +14,21 @@ Usage:
 """
 
 import typer
+from dotenv import load_dotenv
 
 # Create the main CLI application
 app = typer.Typer(
     name="fastapi-app",
     help="FastAPI Application CLI - Manage your FastAPI application",
     add_completion=False,
-    rich_markup_mode="rich"
+    rich_markup_mode="rich",
 )
 
+# Load environment variables from .env beforee we load anything else
+load_dotenv()
+
 # Import commands from the commands package
-from api.commands import serve, version, init_db, check_db, reset_db, shell
+from api.commands import check_db, init_db, reset_db, serve, shell, version  # noqa: E402
 
 # Create database command group
 db_app = typer.Typer(help="Database management commands")

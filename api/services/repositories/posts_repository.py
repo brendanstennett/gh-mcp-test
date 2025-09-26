@@ -1,8 +1,8 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlmodel import select
-from api.models.post import Post
 from collections.abc import Sequence
 
+from sqlmodel import select
+
+from api.models.post import Post
 from api.services.repositories.base_repository import BaseRepository
 
 

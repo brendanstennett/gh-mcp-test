@@ -5,12 +5,13 @@
 # pyright: reportAny=false
 # pyright: reportUnknownMemberType=false
 
+import uuid
+
 import pytest
 import pytest_asyncio
-import uuid
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
 from api.models.post import Post
-from api.models.user import User
 from api.services.repositories.posts_repository import PostsRepository
 
 
@@ -24,9 +25,10 @@ async def test_session():
     async with engine.begin() as conn:
         from sqlmodel import SQLModel
 
+        from api.models.post import Post  # noqa: F401
+
         # Import models to ensure they're registered with SQLModel metadata
         from api.models.user import User  # noqa: F401
-        from api.models.post import Post  # noqa: F401
 
         await conn.run_sync(SQLModel.metadata.create_all)
 

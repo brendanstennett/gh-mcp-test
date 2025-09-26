@@ -7,10 +7,11 @@
 
 import pytest
 import pytest_asyncio
-from sqlmodel import SQLModel
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from api.services.repositories.posts_repository import PostsRepository
+from sqlmodel import SQLModel
+
 from api.models.post import Post
+from api.services.repositories.posts_repository import PostsRepository
 
 
 @pytest_asyncio.fixture

@@ -401,6 +401,7 @@ dependencies = [
     { name = "ipython" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
+    { name = "python-dotenv" },
     { name = "sqlmodel" },
     { name = "typer" },
 ]
@@ -421,6 +422,7 @@ requires-dist = [
     { name = "ipython", specifier = ">=9.5.0" },
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "pytest-asyncio", specifier = ">=1.2.0" },
+    { name = "python-dotenv", specifier = ">=1.1.1" },
     { name = "sqlmodel", specifier = ">=0.0.24" },
     { name = "typer", specifier = ">=0.12.0" },
 ]
