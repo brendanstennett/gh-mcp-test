@@ -1,7 +1,7 @@
 {
-  "name": "fastapi-app",
+  "name": "fastapi-gh-mcp-test",
   "version": "0.1.0",
-  "description": "FastAPI application with Svelte frontend",
+  "description": "FastAPI application to test Claude/Github MCP Integeration",
   "private": true,
   "license": "MIT",
   "scripts": {

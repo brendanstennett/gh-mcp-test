@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "fastapi-app"
+name = "fastapi-gh-mcp-test"
 version = "0.1.0"
-description = "A FastAPI application with Typer CLI interface"
+description = "FastAPI application to test Claude/Github MCP Integeration"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
