@@ -6,6 +6,9 @@ This project uses gitflow for development of features. For each feature, a new b
 be create off of the `develop` branch named `feature/<ticket_number>`. PRs should be submitted
 to `develop`.
 
+IMPORTANT: Always create the feature branch before implementing a ticket from scatch.  Pushes to
+develop will be rejected.
+
 # Project Structure
 
 ## Backend (Python FastAPI)
@@ -19,6 +22,10 @@ Backend code is located in `api/` and follows this structure:
 - **Setup** (`api/setup/`): Application initialization (app, auth, database, dependencies)
 - **Commands** (`api/commands/`): CLI commands via Typer
 
+Notes:
+- Ensure you are using python virtual environment located at .venv
+- Use the package manager uv for Python
+
 ## Frontend (SvelteKit)
 
 Frontend code is located in `frontend/` and is a SvelteKit application.
@@ -26,11 +33,23 @@ Frontend code is located in `frontend/` and is a SvelteKit application.
 - API requests should be made in `PageLoad` functions to fetch data server-side
 - Use the `generate-api-types` script to generate TypeScript types from the FastAPI OpenAPI spec
 
+Notes:
+- Use the package manager npm for the frontend
+
 # Database
 
 - **ORM**: SQLModel is the only acceptable ORM for this project
 - **Migrations**: Managed via Alembic (config in `alembic.ini`, migrations in `migrations/`)
 - Database setup and connection logic is in `api/setup/database.py`
+
+**Migration Best Practices**:
+- **AVOID** deleting the `database.sqlite` file - this destroys local data
+- **AVOID** modifying existing migrations that have been committed - this breaks migration history
+- **PREFER** creating new migrations for database changes using `alembic revision --autogenerate`
+- **EXCEPTION**: If a PR comment requests changes to a migration created in the current PR (not yet merged), it's acceptable to:
+  1. Downgrade: `alembic downgrade -1`
+  2. Modify the migration file
+  3. Upgrade: `alembic upgrade head`
 
 # Testing
 

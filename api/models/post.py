@@ -1,9 +1,10 @@
 import uuid
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
+    from api.models.comment import Comment
     from api.models.user import User
 
 
@@ -14,11 +15,8 @@ class Post(SQLModel, table=True):
     is_published: bool = Field()
     user_id: uuid.UUID | None = Field(default=None, foreign_key="user.id")
 
-    # Relationship to user/author
+    # Relationships
     author: Optional["User"] = Relationship(back_populates="posts")
-
-    def __init__(self, **kwargs: Any):
-        super().__init__(**kwargs)
-        for key, value in kwargs.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
+    comments: List["Comment"] = Relationship(
+        back_populates="post", sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
