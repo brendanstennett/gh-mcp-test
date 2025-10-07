@@ -1,5 +1,5 @@
 import uuid
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from sqlmodel import Field, Relationship, SQLModel
 
@@ -20,9 +20,3 @@ class User(SQLModel, table=True):
     # Relationships
     posts: List["Post"] = Relationship(back_populates="author")
     comments: List["Comment"] = Relationship(back_populates="author")
-
-    def __init__(self, **kwargs: Any):
-        super().__init__(**kwargs)
-        for key, value in kwargs.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
