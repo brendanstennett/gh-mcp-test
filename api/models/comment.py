@@ -1,7 +1,7 @@
 import uuid
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Column, ForeignKey, Integer, String, UUID
+from sqlalchemy import UUID, Column, ForeignKey, Integer, String
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:

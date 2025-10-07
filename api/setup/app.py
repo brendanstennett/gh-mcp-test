@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.routers import auth, posts
+from api.routers import auth, comments, posts
 from api.setup.database import create_db_and_tables
 
 
@@ -34,6 +34,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(posts.router, prefix="/api/v1/posts", tags=["posts"])
+app.include_router(comments.router, prefix="/api/v1/comments", tags=["comments"])
 app.include_router(auth.router, prefix="/auth", tags=["authentication"])
 
 
