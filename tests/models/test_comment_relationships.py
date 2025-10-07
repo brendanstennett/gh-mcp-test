@@ -163,3 +163,138 @@ async def test_comment_indexes(test_session):
     index_columns = [idx["column_names"] for idx in indexes]
     assert ["user_id"] in index_columns
     assert ["post_id"] in index_columns
+
+
+@pytest.mark.asyncio
+async def test_comment_author_relationship(test_session):
+    """Test that comment.author relationship works"""
+    from api.models.post import Post
+    from api.models.user import User
+
+    # Create actual user and post
+    user = User(email="test@example.com", hashed_password="hashed")
+    post = Post(title="Test Post", body="Post Body", is_published=True, user_id=user.id)
+    test_session.add(user)
+    test_session.add(post)
+    await test_session.commit()
+
+    # Create comment with relationship
+    comment = Comment(body="Test comment", user_id=user.id, post_id=post.id)
+    test_session.add(comment)
+    await test_session.commit()
+
+    # Test relationship loading
+    await test_session.refresh(comment, ["author", "post"])
+    assert comment.author is not None
+    assert comment.author.email == "test@example.com"
+    assert comment.post is not None
+    assert comment.post.title == "Test Post"
+
+
+@pytest.mark.asyncio
+async def test_comment_cascade_delete_from_user(test_session):
+    """Test that deleting a user cascades to delete their comments"""
+    from api.models.user import User
+
+    # Create user and comment
+    user = User(email="test@example.com", hashed_password="hashed")
+    test_session.add(user)
+    await test_session.commit()
+
+    comment = Comment(body="Test comment", user_id=user.id)
+    test_session.add(comment)
+    await test_session.commit()
+
+    comment_id = comment.id
+
+    # Delete the user
+    await test_session.delete(user)
+    await test_session.commit()
+
+    # Verify comment was deleted
+    result = await test_session.execute(select(Comment).where(Comment.id == comment_id))
+    deleted_comment = result.scalar_one_or_none()
+    assert deleted_comment is None
+
+
+@pytest.mark.asyncio
+async def test_comment_cascade_delete_from_post(test_session):
+    """Test that deleting a post cascades to delete its comments"""
+    from api.models.post import Post
+    from api.models.user import User
+
+    # Create user and post
+    user = User(email="test@example.com", hashed_password="hashed")
+    test_session.add(user)
+    await test_session.commit()
+
+    post = Post(title="Test Post", body="Post Body", is_published=True, user_id=user.id)
+    test_session.add(post)
+    await test_session.commit()
+
+    # Create comment on the post
+    comment = Comment(body="Test comment", post_id=post.id)
+    test_session.add(comment)
+    await test_session.commit()
+
+    comment_id = comment.id
+
+    # Delete the post
+    await test_session.delete(post)
+    await test_session.commit()
+
+    # Verify comment was deleted
+    result = await test_session.execute(select(Comment).where(Comment.id == comment_id))
+    deleted_comment = result.scalar_one_or_none()
+    assert deleted_comment is None
+
+
+@pytest.mark.asyncio
+async def test_user_comments_relationship(test_session):
+    """Test that user.comments relationship works"""
+    from api.models.user import User
+
+    # Create user
+    user = User(email="test@example.com", hashed_password="hashed")
+    test_session.add(user)
+    await test_session.commit()
+
+    # Create multiple comments by this user
+    comment1 = Comment(body="Comment 1", user_id=user.id)
+    comment2 = Comment(body="Comment 2", user_id=user.id)
+    test_session.add(comment1)
+    test_session.add(comment2)
+    await test_session.commit()
+
+    # Load user with comments
+    await test_session.refresh(user, ["comments"])
+    assert len(user.comments) == 2
+    assert {c.body for c in user.comments} == {"Comment 1", "Comment 2"}
+
+
+@pytest.mark.asyncio
+async def test_post_comments_relationship(test_session):
+    """Test that post.comments relationship works"""
+    from api.models.post import Post
+    from api.models.user import User
+
+    # Create user and post
+    user = User(email="test@example.com", hashed_password="hashed")
+    test_session.add(user)
+    await test_session.commit()
+
+    post = Post(title="Test Post", body="Post Body", is_published=True, user_id=user.id)
+    test_session.add(post)
+    await test_session.commit()
+
+    # Create multiple comments on this post
+    comment1 = Comment(body="Comment 1", post_id=post.id)
+    comment2 = Comment(body="Comment 2", post_id=post.id)
+    test_session.add(comment1)
+    test_session.add(comment2)
+    await test_session.commit()
+
+    # Load post with comments
+    await test_session.refresh(post, ["comments"])
+    assert len(post.comments) == 2
+    assert {c.body for c in post.comments} == {"Comment 1", "Comment 2"}

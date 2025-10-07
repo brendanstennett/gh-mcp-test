@@ -42,6 +42,15 @@ Notes:
 - **Migrations**: Managed via Alembic (config in `alembic.ini`, migrations in `migrations/`)
 - Database setup and connection logic is in `api/setup/database.py`
 
+**Migration Best Practices**:
+- **AVOID** deleting the `database.sqlite` file - this destroys local data
+- **AVOID** modifying existing migrations that have been committed - this breaks migration history
+- **PREFER** creating new migrations for database changes using `alembic revision --autogenerate`
+- **EXCEPTION**: If a PR comment requests changes to a migration created in the current PR (not yet merged), it's acceptable to:
+  1. Downgrade: `alembic downgrade -1`
+  2. Modify the migration file
+  3. Upgrade: `alembic upgrade head`
+
 # Testing
 
 - **Framework**: Pytest

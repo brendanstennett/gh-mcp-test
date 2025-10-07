@@ -17,4 +17,6 @@ class Post(SQLModel, table=True):
 
     # Relationships
     author: Optional["User"] = Relationship(back_populates="posts")
-    comments: List["Comment"] = Relationship(back_populates="post")
+    comments: List["Comment"] = Relationship(
+        back_populates="post", sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
