@@ -7,6 +7,7 @@ from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.models.user import User
+from api.services.repositories.comments_repository import CommentsRepository
 from api.services.repositories.posts_repository import PostsRepository
 from api.setup.auth import UserManager, current_superuser, current_user
 from api.setup.database import get_async_session
@@ -37,6 +38,13 @@ def get_posts_repository(session: AsyncSessionDep):
 
 
 PostsRepositoryDep = Annotated[PostsRepository, Depends(get_posts_repository)]
+
+
+def get_comments_repository(session: AsyncSessionDep):
+    return CommentsRepository(session)
+
+
+CommentsRepositoryDep = Annotated[CommentsRepository, Depends(get_comments_repository)]
 
 # Authentication Dependencies
 CurrentUserDep = Annotated[User, Depends(current_user)]
