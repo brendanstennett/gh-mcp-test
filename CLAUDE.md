@@ -12,10 +12,10 @@ to `develop`.
 
 Backend code is located in `api/` and follows this structure:
 
-- **Routes** (`api/routers/`): Keep routes slim - they should handle request/response validation and delegate to services
+- **Routes** (`api/routers/`): Keep routes slim - they should handle request/response validation and delegate to services. Use SQLModel entities directly in route signatures.
 - **Models** (`api/models/`): SQLModel entities representing database tables
 - **Services** (`api/services/` and `api/services/repositories/`): Business logic and data access
-- **Schemas** (`api/schemas/`): Pydantic schemas for request/response validation
+- **Schemas** (`api/schemas/`): Only used for fastapi-users integration. Do NOT create separate schemas for other models - use SQLModel entities directly in routes.
 - **Setup** (`api/setup/`): Application initialization (app, auth, database, dependencies)
 - **Commands** (`api/commands/`): CLI commands via Typer
 
