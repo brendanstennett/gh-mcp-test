@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, List, Optional
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
+    from api.models.comment import Comment
     from api.models.post import Post
 
 
@@ -16,8 +17,9 @@ class User(SQLModel, table=True):
     is_superuser: bool = Field(default=False)
     is_verified: bool = Field(default=False)
 
-    # Relationship to posts
+    # Relationships
     posts: List["Post"] = Relationship(back_populates="author")
+    comments: List["Comment"] = Relationship(back_populates="author")
 
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)

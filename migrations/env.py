@@ -13,8 +13,9 @@ from alembic import context
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from api.setup.database import sqlite_url
-from api.models.user import User
+from api.models.comment import Comment
 from api.models.post import Post
+from api.models.user import User
 from sqlmodel import SQLModel
 
 # this is the Alembic Config object, which provides
