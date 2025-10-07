@@ -11,7 +11,9 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlmodel import SQLModel
 
 from api.models.comment import Comment
+from api.models.post import Post
 from api.services.repositories.comments_repository import CommentsRepository
+from api.services.repositories.posts_repository import PostsRepository
 
 
 @pytest_asyncio.fixture
@@ -32,6 +34,12 @@ async def test_session():
 async def comments_repository(test_session) -> CommentsRepository:
     """Create a CommentsRepository instance with test session"""
     return CommentsRepository(test_session)
+
+
+@pytest_asyncio.fixture
+async def posts_repository(test_session) -> PostsRepository:
+    """Create a PostsRepository instance with test session"""
+    return PostsRepository(test_session)
 
 
 @pytest.mark.asyncio
@@ -122,3 +130,17 @@ async def test_delete_nonexistent_comment(comments_repository):
     """Test deleting a comment that doesn't exist"""
     success = await comments_repository.delete_comment(999)
     assert success is False
+
+
+@pytest.mark.asyncio
+async def test_create_comment_with_relationships(comments_repository, posts_repository):
+    """Test creating a comment with valid post_id"""
+    # Create a post first
+    post = Post(title="Test", body="Content", is_published=True)
+    created_post = await posts_repository.create_post(post)
+
+    # Create comment with post_id
+    comment = Comment(body="Test comment", is_published=True, post_id=created_post.id)
+    created_comment = await comments_repository.create_comment(comment)
+
+    assert created_comment.post_id == created_post.id
