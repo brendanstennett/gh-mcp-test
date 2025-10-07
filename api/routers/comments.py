@@ -48,6 +48,4 @@ async def delete_comment(comment_id: int, comments_repository: CommentsRepositor
     if existing_comment.user_id != user.id:
         raise HTTPException(status_code=403, detail="Not authorized to delete this comment")
 
-    success = await comments_repository.delete_comment(comment_id)
-    if not success:
-        raise HTTPException(status_code=404, detail="Comment not found")
+    await comments_repository.delete_comment(comment_id)
