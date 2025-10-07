@@ -28,16 +28,26 @@ async def create_comment(comment: Comment, comments_repository: CommentsReposito
 
 @router.put("/{comment_id}", response_model=Comment, tags=["comments"])
 async def update_comment(
-    comment_id: int, comment: Comment, comments_repository: CommentsRepositoryDep, _user: CurrentUserDep
+    comment_id: int, comment: Comment, comments_repository: CommentsRepositoryDep, user: CurrentUserDep
 ) -> Comment:
-    updated_comment = await comments_repository.update_comment(comment_id, comment)
-    if not updated_comment:
+    existing_comment = await comments_repository.find_comment(comment_id)
+    if not existing_comment:
         raise HTTPException(status_code=404, detail="Comment not found")
-    return updated_comment
+    if existing_comment.user_id != user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this comment")
+
+    updated_comment = await comments_repository.update_comment(comment_id, comment)
+    return updated_comment  # type: ignore
 
 
 @router.delete("/{comment_id}", status_code=204, tags=["comments"])
-async def delete_comment(comment_id: int, comments_repository: CommentsRepositoryDep, _user: CurrentUserDep):
+async def delete_comment(comment_id: int, comments_repository: CommentsRepositoryDep, user: CurrentUserDep):
+    existing_comment = await comments_repository.find_comment(comment_id)
+    if not existing_comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    if existing_comment.user_id != user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this comment")
+
     success = await comments_repository.delete_comment(comment_id)
     if not success:
         raise HTTPException(status_code=404, detail="Comment not found")

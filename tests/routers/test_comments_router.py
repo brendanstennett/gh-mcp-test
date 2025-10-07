@@ -215,6 +215,21 @@ class TestCreateComment:
         mock_repo.create_comment.assert_called_once()
 
     @pytest.mark.asyncio
+    async def test_create_comment_sets_user_id(self, client_with_mocks, sample_comment):
+        """Test that user_id is correctly set from authenticated user"""
+        client, mock_repo, mock_current_user = client_with_mocks
+        mock_repo.create_comment.return_value = sample_comment
+
+        comment_data = {"body": "Test comment", "is_published": True, "post_id": 1}
+        response = client.post("/api/v1/comments", json=comment_data)
+
+        assert response.status_code == 201
+        # Verify user_id was set correctly
+        mock_repo.create_comment.assert_called_once()
+        call_args = mock_repo.create_comment.call_args[0][0]
+        assert call_args.user_id == mock_current_user.id
+
+    @pytest.mark.asyncio
     async def test_create_comment_without_auth(self):
         """Test comment creation without authentication"""
         with TestClient(app) as client:
@@ -230,8 +245,12 @@ class TestUpdateComment:
     @pytest.mark.asyncio
     async def test_update_comment_success(self, client_with_mocks):
         """Test successful comment update"""
-        client, mock_repo, _ = client_with_mocks
+        client, mock_repo, mock_current_user = client_with_mocks
+        existing_comment = Comment(
+            id=1, body="Old comment", is_published=True, post_id=1, user_id=mock_current_user.id
+        )
         updated_comment = Comment(id=1, body="Updated comment", is_published=True, post_id=1)
+        mock_repo.find_comment.return_value = existing_comment
         mock_repo.update_comment.return_value = updated_comment
 
         comment_data = {"body": "Updated comment", "is_published": True, "post_id": 1}
@@ -251,7 +270,7 @@ class TestUpdateComment:
     async def test_update_comment_not_found(self, client_with_mocks):
         """Test update of non-existent comment"""
         client, mock_repo, _ = client_with_mocks
-        mock_repo.update_comment.return_value = None
+        mock_repo.find_comment.return_value = None
 
         comment_data = {"body": "Updated comment", "is_published": True, "post_id": 1}
         response = client.put("/api/v1/comments/999", json=comment_data)
@@ -259,14 +278,17 @@ class TestUpdateComment:
         assert response.status_code == 404
         data = response.json()
         assert data["detail"] == "Comment not found"
-        mock_repo.update_comment.assert_called_once()
+        mock_repo.find_comment.assert_called_once_with(999)
 
     @pytest.mark.asyncio
     async def test_update_comment_with_same_body(self, client_with_mocks):
         """Test update with same body"""
-        client, mock_repo, _ = client_with_mocks
-
+        client, mock_repo, mock_current_user = client_with_mocks
+        existing_comment = Comment(
+            id=1, body="Same body", is_published=True, post_id=1, user_id=mock_current_user.id
+        )
         updated_comment = Comment(id=1, body="Same body", is_published=True, post_id=1)
+        mock_repo.find_comment.return_value = existing_comment
         mock_repo.update_comment.return_value = updated_comment
 
         comment_data = {"body": "Same body", "is_published": True, "post_id": 1}
@@ -294,7 +316,11 @@ class TestDeleteComment:
     @pytest.mark.asyncio
     async def test_delete_comment_success(self, client_with_mocks):
         """Test successful comment deletion"""
-        client, mock_repo, _ = client_with_mocks
+        client, mock_repo, mock_current_user = client_with_mocks
+        existing_comment = Comment(
+            id=1, body="Test comment", is_published=True, post_id=1, user_id=mock_current_user.id
+        )
+        mock_repo.find_comment.return_value = existing_comment
         mock_repo.delete_comment.return_value = True
 
         response = client.delete("/api/v1/comments/1")
@@ -307,14 +333,14 @@ class TestDeleteComment:
     async def test_delete_comment_not_found(self, client_with_mocks):
         """Test deletion of non-existent comment"""
         client, mock_repo, _ = client_with_mocks
-        mock_repo.delete_comment.return_value = False
+        mock_repo.find_comment.return_value = None
 
         response = client.delete("/api/v1/comments/999")
 
         assert response.status_code == 404
         data = response.json()
         assert data["detail"] == "Comment not found"
-        mock_repo.delete_comment.assert_called_once_with(999)
+        mock_repo.find_comment.assert_called_once_with(999)
 
     @pytest.mark.asyncio
     async def test_delete_comment_invalid_id(self, client_with_mocks):
@@ -340,10 +366,12 @@ class TestCommentsControllerIntegration:
     @pytest.mark.asyncio
     async def test_full_comment_lifecycle(self, client_with_mocks):
         """Test complete CRUD lifecycle of a comment"""
-        client, mock_repo, _ = client_with_mocks
+        client, mock_repo, mock_current_user = client_with_mocks
 
         # Create
-        created_comment = Comment(id=1, body="Test comment", is_published=True, post_id=1)
+        created_comment = Comment(
+            id=1, body="Test comment", is_published=True, post_id=1, user_id=mock_current_user.id
+        )
         mock_repo.create_comment.return_value = created_comment
 
         create_response = client.post(
